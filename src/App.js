@@ -1,14 +1,15 @@
 import './App.css';
 import * as THREE from 'three';
-
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import model from './low-poly_truck_car_drifter.glb';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
-const parcelPath = new URL('./low-poly_truck_car_drifter.gltf', import.meta.url);
+const parcelPath = new URL('./low-poly_truck_car_drifter_data.bin', import.meta.url);
 
 function App() {
 
@@ -47,31 +48,14 @@ function init() {
   grid.material.transparent = true;
   scene.add( grid );
 
-  const ktx2Loader = new KTX2Loader()
-    .setTranscoderPath( 'js/libs/basis/' )
-    .detectSupport( renderer );
+    let loader = new GLTFLoader();
+    loader.load(model, function (geometry) {
+      console.log(geometry);
+      // if the model is loaded successfully, add it to your scene here
+    }, undefined, function (err) {
+      console.error(err);
+    });
 
-  const loader = new GLTFLoader().setPath(parcelPath.href);
-  loader.setKTX2Loader( ktx2Loader );
-  loader.setMeshoptDecoder( MeshoptDecoder );
-  loader.load( parcelPath.href, function ( glb ) {
-    scene.add( glb.scene );
-  }, undefined, function ( error ) {
-    console.error( error );
-});
-  // loader.load( 'coffeemat.glb', function ( gltf ) {
-
-  //   // coffeemat.glb was produced from the source scene using gltfpack:
-  //   // gltfpack -i coffeemat/scene.gltf -o coffeemat.glb -cc -tc
-  //   // The resulting model uses EXT_meshopt_compression (for geometry) and KHR_texture_basisu (for texture compression using ETC1S/BasisLZ)
-
-  //   gltf.scene.position.y = 8;
-
-  //   scene.add( gltf.scene );
-
-  //   render();
-
-  // } );
 
   const controls = new OrbitControls( camera, renderer.domElement );
   controls.addEventListener( 'change', render ); // use if there is no animation loop
@@ -106,7 +90,7 @@ function render() {
 
   return (
     <div className="App">
-
+       <div id="threejs" />
     </div>
   );
 }
